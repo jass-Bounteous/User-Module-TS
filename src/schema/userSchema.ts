@@ -21,8 +21,8 @@ const userTemplate = new mongoose.Schema({
     type: String,
     require: true,
   },
-  blood_grp: {
-    type: String,
+  dob: {
+    type: Date,
     require: false,
   },
   authToken: {

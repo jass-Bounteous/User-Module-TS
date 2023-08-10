@@ -12,17 +12,17 @@ const login = async (
   next: NextFunction
 ): Promise<Response | void> => {
   try {
-    const email: string = req.body?.email ? req.body.email : "";
+    const name: string = req.body?.name ? req.body.name : "";
     const password: string = req.body.password;
 
-    if (!(email && password))
+    if (!(name && password))
       return res.status(400).json({ msg: "Bad Request" });
 
     const dbUser: validUserType | null = await userTemplateCopy.findOne({
-      email,
+      name,
     }); // Use findOne instead of find
 
-    if (!dbUser) return res.status(401).json({ msg: "Invalid Email" });
+    if (!dbUser) return res.status(401).json({ msg: "Invalid Name" });
 
     bcrypt.compare(
       password,
@@ -40,14 +40,14 @@ const login = async (
 
             // Update authToken in DB
             const updatedData = await userTemplateCopy.findOneAndUpdate(
-              { email },
+              { name },
               { $set: { authToken: tokens.accessToken } },
               { new: true }
             );
 
             return res.json({
               msg: "Welcome " + dbUser.name,
-              data: updatedData,
+              // data: updatedData,
               tokens,
             });
           }
@@ -63,6 +63,7 @@ const signup: RequestHandler = async (
   res: Response
 ): Promise<Response | void> => {
   const userData: validUserType = req.body;
+  //   console.log(userData);
   if (isInValid(userData)) {
     res.status(400).json({ msg: "Bad request" });
     return;
@@ -72,7 +73,7 @@ const signup: RequestHandler = async (
     const dbUser = await userTemplateCopy.findOne({ email: userData.email });
     if (dbUser)
       return res.status(400).json({
-        msg: "This Email has already been registered",
+        msg: "This Username has already been registered",
       });
     const saltPassword = await bcrypt.genSalt(10);
     userData.password = await bcrypt.hash(userData.password, saltPassword);
@@ -113,7 +114,8 @@ const refreshToken = async (
       { $set: { authToken: accessToken } },
       { new: true }
     );
-    res.status(200).json({ accessToken, updatedData });
+    res.status(200).json({ accessToken });
+    // res.status(200).json({ accessToken, updatedData });
   } catch (e) {
     return res.status(500).json({ msg: "Error comparing tokens!" });
   }
