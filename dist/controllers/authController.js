@@ -21,15 +21,15 @@ const authServices_1 = require("../services/authServices");
 const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const email = ((_a = req.body) === null || _a === void 0 ? void 0 : _a.email) ? req.body.email : "";
+        const name = ((_a = req.body) === null || _a === void 0 ? void 0 : _a.name) ? req.body.name : "";
         const password = req.body.password;
-        if (!(email && password))
+        if (!(name && password))
             return res.status(400).json({ msg: "Bad Request" });
         const dbUser = yield userSchema_1.default.findOne({
-            email,
+            name,
         }); // Use findOne instead of find
         if (!dbUser)
-            return res.status(401).json({ msg: "Invalid Email" });
+            return res.status(401).json({ msg: "Invalid Name" });
         bcrypt_1.default.compare(password, dbUser.password, (err, result) => __awaiter(void 0, void 0, void 0, function* () {
             if (err) {
                 return res
@@ -43,10 +43,10 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
                 else {
                     const tokens = yield (0, authServices_1.generateTokens)(Object.assign({}, dbUser));
                     // Update authToken in DB
-                    const updatedData = yield userSchema_1.default.findOneAndUpdate({ email }, { $set: { authToken: tokens.accessToken } }, { new: true });
+                    const updatedData = yield userSchema_1.default.findOneAndUpdate({ name }, { $set: { authToken: tokens.accessToken } }, { new: true });
                     return res.json({
                         msg: "Welcome " + dbUser.name,
-                        data: updatedData,
+                        // data: updatedData,
                         tokens,
                     });
                 }
@@ -60,6 +60,7 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
 exports.login = login;
 const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userData = req.body;
+    //   console.log(userData);
     if ((0, userServices_1.isInValid)(userData)) {
         res.status(400).json({ msg: "Bad request" });
         return;
@@ -69,7 +70,7 @@ const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const dbUser = yield userSchema_1.default.findOne({ email: userData.email });
         if (dbUser)
             return res.status(400).json({
-                msg: "This Email has already been registered",
+                msg: "This Username has already been registered",
             });
         const saltPassword = yield bcrypt_1.default.genSalt(10);
         userData.password = yield bcrypt_1.default.hash(userData.password, saltPassword);
@@ -98,7 +99,8 @@ const refreshToken = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         const accessToken = yield (0, authServices_1.generateAccessToken)(user);
         // Update authToken in DB
         const updatedData = yield userSchema_1.default.findOneAndUpdate({ email: (user === null || user === void 0 ? void 0 : user._doc.email) ? user._doc.email : "" }, { $set: { authToken: accessToken } }, { new: true });
-        res.status(200).json({ accessToken, updatedData });
+        res.status(200).json({ accessToken });
+        // res.status(200).json({ accessToken, updatedData });
     }
     catch (e) {
         return res.status(500).json({ msg: "Error comparing tokens!" });
