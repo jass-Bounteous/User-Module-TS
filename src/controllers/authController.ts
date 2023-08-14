@@ -4,7 +4,7 @@ import { Request, Response, NextFunction, RequestHandler } from "express";
 import bcrypt from "bcrypt";
 import { isInValid, addUserService } from "../services/userServices";
 import { generateTokens, generateAccessToken } from "../services/authServices";
-import { dbUserType, validUserType } from "../types";
+import { validUserType } from "../types";
 
 const login = async (
   req: Request,
@@ -18,7 +18,7 @@ const login = async (
     if (!(name && password))
       return res.status(400).json({ msg: "Bad Request" });
 
-    const dbUser: dbUserType | null = await userTemplateCopy.findOne({
+    const dbUser: validUserType | null = await userTemplateCopy.findOne({
       name,
     }); // Use findOne instead of find
 
@@ -36,9 +36,8 @@ const login = async (
           if (!result) {
             return res.status(401).json({ msg: "Invalid Password" });
           } else {
-            console.log({ ...dbUser._doc });
             const tokens: { accessToken: string; refreshToken: string } =
-              await generateTokens({ ...dbUser._doc });
+              await generateTokens({ name, password });
 
             // Update authToken in DB
             const updatedData = await userTemplateCopy.findOneAndUpdate(
@@ -49,7 +48,6 @@ const login = async (
 
             return res.json({
               msg: "Welcome " + dbUser.name,
-              // data: updatedData,
               tokens,
             });
           }
@@ -65,7 +63,6 @@ const signup: RequestHandler = async (
   res: Response
 ): Promise<Response | void> => {
   const userData: validUserType = req.body;
-  //   console.log(userData);
   if (isInValid(userData)) {
     res.status(400).json({ msg: "Bad request" });
     return;
@@ -74,7 +71,7 @@ const signup: RequestHandler = async (
     // Check Duplication of Employee Code
     const dbUser = await userTemplateCopy.findOne({ email: userData.email });
     if (dbUser)
-      return res.status(400).json({
+      return res.status(401).json({
         msg: "This Username has already been registered",
       });
     const saltPassword = await bcrypt.genSalt(10);
@@ -117,7 +114,6 @@ const refreshToken = async (
       { new: true }
     );
     res.status(200).json({ accessToken });
-    // res.status(200).json({ accessToken, updatedData });
   } catch (e) {
     return res.status(500).json({ msg: "Error comparing tokens!" });
   }

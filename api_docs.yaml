@@ -1,0 +1,170 @@
+openapi: 3.0.0
+info:
+  title: Authentication using TypeScript API
+  description: TS-Auth API docs
+  version: 1.0.0
+  contact:
+    email: jayasurya.karthikeyan@bounteous.com
+    name: Jayasurya
+
+paths:
+  /login:
+    post:
+      description: This API is used to login an user
+      requestBody:
+        description: Login Credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/loginBody"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Welcome message
+                  tokens:
+                    type: object
+                    description: An object of access token and refresh token
+        "400":
+          description: Bad Request, Insufficient data provided
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+        "401":
+          description: Invalid Credentials, Username is registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+        "500":
+          description: Invalid Credentials, Password is incorrect
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+
+  /signup:
+    post:
+      description: This API is used to signup/add an user
+      requestBody:
+        description: Login Credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/signupBody"
+      responses:
+        "200":
+          description: Signup successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                  data:
+                    type: object
+                    description: The stored user data
+        "400":
+          description: Bad Request, Insufficient data provided
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+        "401":
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+
+  /refreshToken:
+    post:
+      description: This API is used to signup/add an user
+      parameters:
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+          description: The refresh token obtained earlier.
+      responses:
+        "200":
+          description: New access token generated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                    description: The new access token.
+        "401":
+          description: Unauthorized. Refresh token expired or invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error message.
+        "500":
+          description: Error comapring tokens, or the function returned a string.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error message.
+
+components:
+  schemas:
+    loginBody:
+      type: object
+      properties:
+        name:
+          type: string
+        password:
+          type: string
+    signupBody:
+      type: object
+      properties:
+        name:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+        emp_code:
+          type: string
+        mobile_no:
+          type: number
+        dob:
+          type: string
