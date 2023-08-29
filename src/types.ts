@@ -9,4 +9,5 @@ export interface validUserType {
   email: string;
   password: string;
   emp_code: number;
+  dob?: Date;
 }

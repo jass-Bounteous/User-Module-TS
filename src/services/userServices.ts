@@ -7,7 +7,7 @@ const addUserService = async (user: validUserType) => {
   return resData;
 };
 
-const isInValid = (data: validUserType) => {
+const isInValid = (data: validUserType): boolean => {
   console.log(data);
 
   return !(
@@ -19,7 +19,7 @@ const isInValid = (data: validUserType) => {
   );
 };
 
-const checkUser = async (id: String) => {
+const checkUser = async (id: String): Promise<boolean> => {
   const user = await userTemplateCopy.findById(id);
   if (user) return true;
   return false;

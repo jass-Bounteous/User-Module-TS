@@ -36,7 +36,8 @@ const login = async (
           if (!result) {
             return res.status(401).json({ msg: "Invalid Password" });
           } else {
-            const tokens = await generateTokens({ ...dbUser });
+            const tokens: { accessToken: string; refreshToken: string } =
+              await generateTokens({ name, password });
 
             // Update authToken in DB
             const updatedData = await userTemplateCopy.findOneAndUpdate(
@@ -47,7 +48,6 @@ const login = async (
 
             return res.json({
               msg: "Welcome " + dbUser.name,
-              // data: updatedData,
               tokens,
             });
           }
@@ -63,7 +63,6 @@ const signup: RequestHandler = async (
   res: Response
 ): Promise<Response | void> => {
   const userData: validUserType = req.body;
-  //   console.log(userData);
   if (isInValid(userData)) {
     res.status(400).json({ msg: "Bad request" });
     return;
@@ -72,7 +71,7 @@ const signup: RequestHandler = async (
     // Check Duplication of Employee Code
     const dbUser = await userTemplateCopy.findOne({ email: userData.email });
     if (dbUser)
-      return res.status(400).json({
+      return res.status(401).json({
         msg: "This Username has already been registered",
       });
     const saltPassword = await bcrypt.genSalt(10);
@@ -107,15 +106,14 @@ const refreshToken = async (
 
     if (typeof user == "string")
       return res.status(500).json({ msg: "Returned a string" });
-    const accessToken = await generateAccessToken(user);
+    const accessToken: string = await generateAccessToken(user);
     // Update authToken in DB
     const updatedData = await userTemplateCopy.findOneAndUpdate(
-      { email: user?._doc.email ? user._doc.email : "" },
+      { email: user?.email ? user.email : "" },
       { $set: { authToken: accessToken } },
       { new: true }
     );
     res.status(200).json({ accessToken });
-    // res.status(200).json({ accessToken, updatedData });
   } catch (e) {
     return res.status(500).json({ msg: "Error comparing tokens!" });
   }
