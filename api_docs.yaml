@@ -151,20 +151,27 @@ components:
       properties:
         name:
           type: string
+          required: true
         password:
           type: string
+          required: true
     signupBody:
       type: object
       properties:
         name:
           type: string
+          required: true
         password:
           type: string
+          required: true
         email:
           type: string
+          required: true
         emp_code:
           type: string
+          required: true
         mobile_no:
           type: number
+          required: true
         dob:
           type: string

@@ -5,7 +5,13 @@ function generateTokens(user: Object): {
   refreshToken: string;
 } {
   const accessToken: string = generateAccessToken(user);
-  const refreshToken: string = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
+  const refreshToken: string = jwt.sign(
+    user,
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: "20m",
+    }
+  );
   return { accessToken, refreshToken };
 }
 function generateAccessToken(user: Object): string {
