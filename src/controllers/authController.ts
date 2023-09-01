@@ -14,6 +14,7 @@ const login = async (
   try {
     const name: string = req.body?.name ? req.body.name : "";
     const password: string = req.body.password;
+    console.log(name, password);
 
     if (!(name && password))
       return res.status(400).json({ msg: "Bad Request" });
@@ -22,6 +23,7 @@ const login = async (
       name,
     }); // Use findOne instead of find
 
+    console.log(dbUser);
     if (!dbUser) return res.status(401).json({ msg: "Invalid Name" });
 
     bcrypt.compare(
@@ -45,7 +47,7 @@ const login = async (
               { new: true }
             );
 
-            return res.json({
+            return res.status(200).json({
               msg: "Welcome " + dbUser.name,
               // data: updatedData,
               tokens,
@@ -70,7 +72,7 @@ const signup: RequestHandler = async (
   }
   try {
     // Check Duplication of Employee Code
-    const dbUser = await userTemplateCopy.findOne({ email: userData.email });
+    const dbUser = await userTemplateCopy.findOne({ name: userData.name });
     if (dbUser)
       return res.status(400).json({
         msg: "This Username has already been registered",
@@ -78,8 +80,9 @@ const signup: RequestHandler = async (
     const saltPassword = await bcrypt.genSalt(10);
     userData.password = await bcrypt.hash(userData.password, saltPassword);
 
-    console.log(userData);
-    const resData = await addUserService(userData);
+
+    const resData = await userTemplateCopy.create(userData);
+
     console.log(resData);
     res.status(201).json({ msg: "User added successfully", data: resData });
   } catch (err) {

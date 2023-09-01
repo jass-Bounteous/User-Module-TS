@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node dist/app.js",
     "dev": "nodemon src/app.ts",
-    "build": "npx tsc -p ."
+    "build": "npx tsc -p .",
+    "test": "mocha --require ts-node/register 'test/**/*.test.ts'"
   },
   "author": "Jayasurya K",
   "license": "ISC",
@@ -15,12 +16,22 @@
     "@types/jsonwebtoken": "^9.0.2",
     "@types/mongoose": "^5.11.97",
     "bcrypt": "^5.1.0",
+    "chai": "^4.3.8",
+    "chai-http": "^4.4.0",
     "dotenv": "^16.3.1",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "install": "^0.13.0",
+    "mocha": "^10.2.0",
+    "npm": "^9.8.1",
+    "sinon": "^15.2.0",
+    "sinon-chai": "^3.7.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.3.5",
     "@types/express": "^4.17.17",
+    "@types/mocha": "^10.0.1",
     "@types/node": "^20.4.6",
+    "@types/sinon": "^10.0.16",
     "jsonwebtoken": "^9.0.1",
     "nodemon": "^3.0.1",
     "ts-node": "^10.9.1",
