@@ -1,7 +1,7 @@
 import mongoose, { ConnectOptions } from "mongoose";
 import { config } from "dotenv";
 
-const DbConnect = () => {
+const DbConnect = async() => {
   config();
 
   const dbUrl: string = process.env.dbUrl ? process.env.dbUrl.toString() : "";
@@ -11,7 +11,7 @@ const DbConnect = () => {
     useUnifiedTopology: true,
   } as ConnectOptions;
 
-  mongoose
+  await mongoose
     .connect(dbUrl, options)
     .then(() => console.log("DB Connected!!"))
     .catch((err: Error) => console.log("Error: " + err));

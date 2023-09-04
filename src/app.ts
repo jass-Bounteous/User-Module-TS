@@ -8,13 +8,18 @@ const app: Application = express();
 app.use(express.json());
 app.use(methodLogger);
 
-DbConnect();
-
 app.use("/app", authRouter);
 
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
   console.log("Try /login or /signup");
   res.status(200).send("Try /login or /signup");
 });
+async function server() {
+  return await DbConnect().then(() =>
+    app.listen(5000, () => console.log("Server started"))
+  );
+}
 
-app.listen(5000, () => console.log("Server started"));
+server();
+
+export default app;
