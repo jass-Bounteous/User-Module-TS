@@ -1,11 +1,13 @@
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
-import app from "../src/app";
+import app from "../../../src/app";
 import sinon from "sinon";
-import userTemplateCopy from "../src/schema/userSchema";
+import sinonChai from "sinon-chai";
+import userTemplateCopy from "../../../src/schema/userSchema";
 import bcrypt from "bcrypt";
 
 chai.use(chaiHttp);
+chai.use(sinonChai);
 
 afterEach(() => {
   sinon.restore();
@@ -37,8 +39,8 @@ describe("LOGIN tests:", () => {
 
     const expectdResponseBody = { msg: "Invalid Name" };
 
-    sinon.assert.calledOnce(findOneStub);
-    sinon.assert.calledWith(findOneStub, { name: "tester" });
+    expect(findOneStub).to.have.been.calledOnce;
+    expect(findOneStub).to.have.been.calledWith({ name: "tester" });
     expect(response).to.have.status(401);
     expect(response.body).to.be.deep.equal(expectdResponseBody);
   });
@@ -63,9 +65,9 @@ describe("LOGIN tests:", () => {
       // password: "pass",  _correctPassword_
     });
 
-    sinon.assert.calledOnce(findOneStub);
-    sinon.assert.calledWith(findOneStub, { name: "tester" });
-    sinon.assert.calledWith(bcryptSpy, "wrongPassword", dbUser.password);
+    expect(findOneStub).to.have.been.calledOnce;
+    expect(findOneStub).to.have.been.calledWith({ name: "tester" });
+    expect(bcryptSpy).to.have.been.calledWith("wrongPassword", dbUser.password);
     expect(response).to.have.status(401);
     expect(response.body).to.have.property("msg");
     expect(response.body.msg).to.be.deep.equal("Invalid Password");
@@ -89,8 +91,8 @@ describe("LOGIN tests:", () => {
       password: "pass",
     });
 
-    sinon.assert.calledWith(findOneStub, { name: "tester" });
-    sinon.assert.calledWith(bcryptSpy, "pass", dbUser.password);
+    expect(findOneStub).to.have.been.calledWith({ name: "tester" });
+    expect(bcryptSpy).to.have.been.calledWith("pass", dbUser.password);
     expect(response).to.have.status(200);
     expect(response.body).to.have.property("msg");
     expect(response.body.msg).to.be.deep.equal("Welcome tester");
@@ -117,13 +119,12 @@ describe("SIGNUP tests:", () => {
     const response = await chai.request(app).post("/app/signup").send(userData);
 
     console.log(response.body);
-    sinon.assert.calledOnce(findOneStub);
-    sinon.assert.calledWith(findOneStub, { name: "Hukum" });
+    expect(findOneStub).to.have.been.calledOnce;
+    expect(findOneStub).to.have.been.calledWith({ name: "Hukum" });
     expect(response.status).to.be.equal(201);
     expect(response).to.have.status(201);
     expect(response.body).to.have.property("msg");
     expect(response.body.msg).to.be.equal("User added successfully");
-    expect(true).to.be.true;
   });
 
   it("should return username already registered error", async function () {
@@ -148,7 +149,7 @@ describe("SIGNUP tests:", () => {
 
     const response = await chai.request(app).post("/app/signup").send(userData);
 
-    sinon.assert.calledWith(findOneStub, { name: "test" });
+    expect(findOneStub).to.have.been.calledWith({ name: "test" });
     expect(response.status).to.be.equal(400);
     expect(response.body).to.be.deep.equal(expectdResponseBody);
   });
@@ -170,5 +171,4 @@ describe("SIGNUP tests:", () => {
     expect(response.status).to.be.equal(400);
     expect(response.body).to.be.deep.equal(expectdResponseBody);
   });
-
 });
