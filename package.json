@@ -7,7 +7,7 @@
     "start": "node dist/app.js",
     "dev": "nodemon src/app.ts",
     "build": "npx tsc -p .",
-    "test": "mocha --require ts-node/register 'src/**/*.test.ts'"
+    "test": "mocha --require ts-node/register 'src/**/*.test.ts' --exit"
   },
   "author": "Jayasurya K",
   "license": "ISC",

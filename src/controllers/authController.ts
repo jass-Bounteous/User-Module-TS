@@ -14,7 +14,6 @@ const login = async (
   try {
     const name: string = req.body?.name ? req.body.name : "";
     const password: string = req.body.password;
-    console.log(name, password);
 
     if (!(name && password))
       return res.status(400).json({ msg: "Bad Request" });
@@ -23,7 +22,7 @@ const login = async (
       name,
     }); // Use findOne instead of find
 
-    console.log(dbUser);
+    // console.log(dbUser);
     if (!dbUser) return res.status(401).json({ msg: "Invalid Name" });
 
     bcrypt.compare(
@@ -80,10 +79,11 @@ const signup: RequestHandler = async (
     const saltPassword = await bcrypt.genSalt(10);
     userData.password = await bcrypt.hash(userData.password, saltPassword);
 
-
+    // const newUser = new userTemplateCopy(userData);
+    // newUser.save();
     const resData = await userTemplateCopy.create(userData);
 
-    console.log(resData);
+    // console.log(resData);
     res.status(201).json({ msg: "User added successfully", data: resData });
   } catch (err) {
     res.status(400).json({ msg: err });

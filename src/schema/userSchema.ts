@@ -11,19 +11,19 @@ const userTemplate = new mongoose.Schema({
   },
   email: {
     type: String,
-    require: true,
+    required: true,
   },
   password: {
     type: String,
-    require: true,
+    required: true,
   },
   emp_code: {
     type: String,
-    require: true,
+    required: true,
   },
   dob: {
     type: Date,
-    require: false,
+    required: false,
   },
   authToken: {
     type: String,
